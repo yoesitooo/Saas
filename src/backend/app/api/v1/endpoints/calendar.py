@@ -9,7 +9,7 @@ router = APIRouter()
 # You would get these from Google Cloud Console
 GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET = settings.GOOGLE_CLIENT_SECRET
-GOOGLE_REDIRECT_URI = "http://localhost:8000/api/v1/calendar/callback"
+GOOGLE_REDIRECT_URI = f"{settings.BACKEND_URL}{settings.API_V1_STR}/calendar/callback"
 
 @router.get("/auth")
 async def google_auth():

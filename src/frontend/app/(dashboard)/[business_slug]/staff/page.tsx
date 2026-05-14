@@ -41,7 +41,7 @@ export default function StaffSetup() {
                     <span className="px-2 py-1 bg-green-100 text-green-700 rounded-md text-[10px] font-bold">CONNECTED</span>
                   ) : (
                     <a 
-                      href="http://localhost:8000/api/v1/calendar/auth" 
+                      href={`${process.env.NEXT_PUBLIC_API_URL}/calendar/auth`} 
                       className="text-[10px] font-bold text-blue-600 hover:underline px-3 py-1 bg-blue-50 rounded-md"
                     >
                       CONNECT CALENDAR

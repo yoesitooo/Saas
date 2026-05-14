@@ -4,6 +4,7 @@ from typing import List
 class Settings(BaseSettings):
     PROJECT_NAME: str = "White-Label Booking SaaS"
     API_V1_STR: str = "/api/v1"
+    BACKEND_URL: str = "http://localhost:8000"
     
     # Supabase / DB Config
     SUPABASE_URL: str = ""
