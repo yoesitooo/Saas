@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
+    
+    # Google Calendar
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    
+    # Notifications
+    RESEND_API_KEY: str = ""
 
     class Config:
         case_sensitive = True
