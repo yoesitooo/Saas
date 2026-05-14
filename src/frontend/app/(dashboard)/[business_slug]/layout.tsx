@@ -1,13 +1,26 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
-import '../../globals.css'
 
-const NAV_ITEMS = [
-  { href: '', icon: '◼', label: 'Overview' },
+const S = {
+  bg: '#08080f',
+  bgSecondary: '#0c0c18',
+  bgCard: '#0f0f1c',
+  border: 'rgba(255,255,255,0.07)',
+  borderBright: 'rgba(255,255,255,0.14)',
+  primary: '#6366f1',
+  primaryLight: '#a5b4fc',
+  accent: '#06b6d4',
+  textPrimary: '#f1f5f9',
+  textSecondary: '#94a3b8',
+  textMuted: '#475569',
+}
+
+const NAV = [
+  { href: '', icon: '◉', label: 'Overview' },
   { href: '/branches', icon: '🏢', label: 'Branches' },
   { href: '/staff', icon: '👥', label: 'Staff' },
-  { href: '/services', icon: '🛠', label: 'Services' },
+  { href: '/services', icon: '🛠️', label: 'Services' },
   { href: '/appointments', icon: '📅', label: 'Appointments' },
   { href: '/analytics', icon: '📊', label: 'Analytics' },
   { href: '/settings', icon: '⚙️', label: 'Settings' },
@@ -22,120 +35,112 @@ export default function DashboardLayout({
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const slug = params.business_slug
+  const W = collapsed ? 68 : 248
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)', fontFamily: 'var(--font-sans)' }}>
-      
-      {/* ===== SIDEBAR ===== */}
+    <div style={{ display: 'flex', minHeight: '100vh', background: S.bg, fontFamily: "'Inter', sans-serif" }}>
+      {/* SIDEBAR */}
       <aside style={{
-        width: collapsed ? 72 : 256,
-        flexShrink: 0,
-        background: 'var(--bg-secondary)',
-        borderRight: '1px solid var(--border)',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '24px 0',
-        position: 'fixed',
-        top: 0, bottom: 0, left: 0,
-        transition: 'width 0.3s cubic-bezier(0.4,0,0.2,1)',
-        zIndex: 50,
-        overflow: 'hidden',
+        width: W, flexShrink: 0, position: 'fixed', inset: '0 auto 0 0',
+        background: S.bgSecondary, borderRight: `1px solid ${S.border}`,
+        display: 'flex', flexDirection: 'column',
+        transition: 'width 0.25s cubic-bezier(0.4,0,0.2,1)',
+        zIndex: 50, overflow: 'hidden',
       }}>
         {/* Logo */}
-        <div style={{ padding: '0 20px 28px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-            background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 16, fontWeight: 900, color: 'white', cursor: 'pointer',
-          }} onClick={() => setCollapsed(!collapsed)}>H</div>
-          {!collapsed && (
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.4px', whiteSpace: 'nowrap' }}>horum</div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>
-                {slug.replace(/-/g, ' ')}
-              </div>
-            </div>
-          )}
+        <div style={{ padding: collapsed ? '20px 16px' : '20px 20px 20px', display: 'flex', alignItems: 'center', gap: 10, borderBottom: `1px solid ${S.border}`, minHeight: 65 }}>
+          <button
+            onClick={() => setCollapsed(c => !c)}
+            style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+              background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
+              border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 16, fontWeight: 900, color: 'white',
+            }}>H</button>
+          {!collapsed && <div>
+            <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: '-0.3px' }}>horum</div>
+            <div style={{ fontSize: 11, color: S.textMuted, textTransform: 'capitalize' }}>{slug.replace(/-/g, ' ')}</div>
+          </div>}
         </div>
 
-        {/* Nav */}
-        <nav style={{ flex: 1, padding: '0 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {NAV_ITEMS.map((item) => {
+        {/* Nav links */}
+        <nav style={{ flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {NAV.map((item) => {
             const href = `/${slug}${item.href}`
-            const isActive = typeof window !== 'undefined' && window.location.pathname === href
             return (
               <Link key={item.label} href={href} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '10px 12px', borderRadius: 10,
-                  background: isActive ? 'rgba(99,102,241,0.15)' : 'transparent',
-                  border: isActive ? '1px solid rgba(99,102,241,0.25)' : '1px solid transparent',
-                  color: isActive ? '#a5b4fc' : 'var(--text-secondary)',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: collapsed ? '10px 14px' : '10px 12px',
+                  borderRadius: 9,
+                  color: S.textSecondary,
+                  fontSize: 14, fontWeight: 500,
                   transition: 'all 0.15s',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                 }}
-                  onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--text-primary)'; } }}
-                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; } }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = 'rgba(255,255,255,0.05)'
+                    el.style.color = S.textPrimary
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = 'transparent'
+                    el.style.color = S.textSecondary
+                  }}
                 >
-                  <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
-                  {!collapsed && <span style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</span>}
+                  <span style={{ fontSize: 15, flexShrink: 0 }}>{item.icon}</span>
+                  {!collapsed && <span>{item.label}</span>}
                 </div>
               </Link>
             )
           })}
         </nav>
 
-        {/* Bottom */}
+        {/* Pro badge */}
         {!collapsed && (
-          <div style={{ padding: '0 12px' }}>
+          <div style={{ padding: '12px 12px 20px' }}>
             <div style={{
               background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(6,182,212,0.1))',
-              border: '1px solid rgba(99,102,241,0.2)',
-              borderRadius: 12, padding: 16,
+              border: '1px solid rgba(99,102,241,0.2)', borderRadius: 12, padding: '14px 16px',
             }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#a5b4fc', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pro Plan</div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>5 branches · Unlimited staff</div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: S.primaryLight, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3 }}>Pro Plan</div>
+              <div style={{ fontSize: 12, color: S.textSecondary }}>5 branches · Unlimited staff</div>
             </div>
           </div>
         )}
       </aside>
 
-      {/* ===== MAIN ===== */}
-      <main style={{
-        flex: 1,
-        marginLeft: collapsed ? 72 : 256,
-        transition: 'margin-left 0.3s cubic-bezier(0.4,0,0.2,1)',
-        minWidth: 0,
-      }}>
-        {/* Top Bar */}
+      {/* MAIN */}
+      <main style={{ flex: 1, marginLeft: W, transition: 'margin-left 0.25s cubic-bezier(0.4,0,0.2,1)', minWidth: 0 }}>
+        {/* Topbar */}
         <header style={{
-          height: 64,
-          borderBottom: '1px solid var(--border)',
-          background: 'var(--bg)',
+          height: 62, background: S.bg, borderBottom: `1px solid ${S.border}`,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 32px',
-          position: 'sticky', top: 0, zIndex: 40,
+          padding: '0 28px', position: 'sticky', top: 0, zIndex: 40,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: 13 }}>
-            <span>horum</span>
-            <span>›</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600, textTransform: 'capitalize' }}>{slug.replace(/-/g, ' ')}</span>
+          <div style={{ display: 'flex', gap: 6, fontSize: 13, color: S.textMuted, alignItems: 'center' }}>
+            <span>horum</span><span>›</span>
+            <span style={{ color: S.textPrimary, fontWeight: 600, textTransform: 'capitalize' }}>{slug.replace(/-/g, ' ')}</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <button style={{ width: 36, height: 36, borderRadius: 8, background: 'transparent', border: '1px solid var(--border)', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🔔</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button style={{
+              width: 34, height: 34, borderRadius: 8, border: `1px solid ${S.border}`,
+              background: 'transparent', cursor: 'pointer', color: S.textSecondary,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15
+            }}>🔔</button>
             <div style={{
-              width: 36, height: 36, borderRadius: 10,
+              width: 34, height: 34, borderRadius: 9,
               background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 13, fontWeight: 700, color: 'white', cursor: 'pointer'
+              fontSize: 13, fontWeight: 700, color: 'white', cursor: 'pointer',
             }}>A</div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <div style={{ padding: '32px', minHeight: 'calc(100vh - 64px)' }} className="animate-fade-in">
+        <div style={{ padding: '28px 28px', animation: 'fadeIn 0.4s ease both' }}>
           {children}
         </div>
       </main>
