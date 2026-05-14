@@ -28,3 +28,7 @@ app.include_router(appointments.router, prefix=f"{settings.API_V1_STR}/appointme
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Booking SaaS API"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "online", "version": "1.0.0"}

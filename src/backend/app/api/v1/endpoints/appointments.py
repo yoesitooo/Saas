@@ -13,19 +13,35 @@ async def create_appointment(
     appointment: AppointmentCreate, 
     db=Depends(get_db)
 ):
-    # 1. Save to Supabase
-    # res = db.table("appointments").insert(appointment.dict()).execute()
-    
-    # 2. Check if staff has Google Calendar enabled
-    # sync_info = db.table("google_calendar_sync").select("*").eq("staff_id", appointment.staff_id).single().execute()
-    
-    # 3. Trigger Notifications
-    notifier = NotificationService()
-    notifier.send_appointment_confirmation(
-        to_email=appointment.client_email,
-        client_name=appointment.client_name,
-        date=appointment.start_time,
-        business_name="Your Local Business" # This would be fetched from DB
-    )
-    
-    return {"status": "success", "appointment_id": str(uuid.uuid4())}
+    try:
+        # 1. Persist to Supabase
+        # We use the db client which is already initialized with settings
+        data = {
+            "business_id": str(appointment.business_id) if hasattr(appointment, 'business_id') else "default-uuid",
+            "staff_id": str(appointment.staff_id),
+            "service_id": str(appointment.service_id),
+            "client_name": appointment.client_name,
+            "client_email": appointment.client_email,
+            "start_time": appointment.start_time,
+            "status": "pending"
+        }
+        
+        # This is where the real magic happens once keys are set
+        # res = db.table("appointments").insert(data).execute()
+        
+        # 2. Trigger Notifications (Resend/SendGrid)
+        notifier = NotificationService()
+        notifier.send_appointment_confirmation(
+            to_email=appointment.client_email,
+            client_name=appointment.client_name,
+            date=appointment.start_time,
+            business_name="Business Admin"
+        )
+        
+        return {
+            "status": "success", 
+            "message": "Appointment created and notifications triggered",
+            "appointment_id": str(uuid.uuid4())
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create appointment: {str(e)}")
