@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase/client'
+import { supabase } from '../../../lib/supabase/client'
 
 const S = {
   bg: '#08080f',
