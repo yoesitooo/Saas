@@ -1,100 +1,151 @@
+'use client'
 import React from 'react'
 
-export default function DashboardPage({ params }: { params: { business_slug: string } }) {
+const METRICS = [
+  { label: 'Appointments Today', value: '24', delta: '+12%', icon: '📅', color: '#6366f1', bg: 'rgba(99,102,241,0.1)' },
+  { label: 'Revenue This Week', value: '$3,840', delta: '+8.2%', icon: '💰', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+  { label: 'Active Clients', value: '312', delta: '+5%', icon: '👥', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)' },
+  { label: 'Staff Occupancy', value: '87%', delta: '+3%', icon: '⚡', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+]
+
+const APPOINTMENTS = [
+  { client: 'Sofia Ramírez', service: 'Full Haircut', staff: 'Carlos', time: '10:00 AM', status: 'confirmed', avatar: 'SR' },
+  { client: 'James Wilson', service: 'Beard Trim', staff: 'Luis', time: '10:30 AM', status: 'confirmed', avatar: 'JW' },
+  { client: 'Ana Torres', service: 'Color & Style', staff: 'Maria', time: '11:00 AM', status: 'pending', avatar: 'AT' },
+  { client: 'Michael Chen', service: 'Consultation', staff: 'Carlos', time: '12:30 PM', status: 'confirmed', avatar: 'MC' },
+  { client: 'Lucia Gómez', service: 'Full Haircut', staff: 'Luis', time: '01:00 PM', status: 'pending', avatar: 'LG' },
+]
+
+const STATUS_STYLES: Record<string, {bg: string, color: string, label: string}> = {
+  confirmed: { bg: 'rgba(16,185,129,0.15)', color: '#6ee7b7', label: 'Confirmed' },
+  pending: { bg: 'rgba(245,158,11,0.15)', color: '#fcd34d', label: 'Pending' },
+  cancelled: { bg: 'rgba(239,68,68,0.15)', color: '#fca5a5', label: 'Cancelled' },
+}
+
+const QUICK_ACTIONS = [
+  { icon: '➕', label: 'New Appointment', color: '#6366f1' },
+  { icon: '👤', label: 'Add Staff', color: '#06b6d4' },
+  { icon: '🔌', label: 'Get Embed Code', color: '#10b981' },
+  { icon: '📊', label: 'Export Report', color: '#f59e0b' },
+]
+
+export default function DashboardPage() {
   return (
-    <div className="space-y-8">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Revenue" value="$24,500" change="+12.5%" icon="💰" color="blue" />
-        <StatCard title="Appointments" value="156" change="+8.2%" icon="📅" color="purple" />
-        <StatCard title="Active Staff" value="12" change="0%" icon="👥" color="green" />
-        <StatCard title="Customer Satisfaction" value="98%" change="+2.1%" icon="⭐" color="orange" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 6 }}>Good morning, Admin 👋</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · Here&apos;s what&apos;s happening today.
+          </p>
+        </div>
+        <button className="btn-primary">
+          + New Appointment
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Appointments */}
-        <div className="lg:col-span-2 card-premium">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Recent Appointments</h2>
-            <button className="text-blue-600 text-sm font-semibold hover:underline">View All</button>
+      {/* Metric Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        {METRICS.map((m, i) => (
+          <div key={i} className="card" style={{ padding: 24, animationDelay: `${i * 0.1}s` }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: m.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{m.icon}</div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '3px 10px', borderRadius: 100 }}>{m.delta}</span>
+            </div>
+            <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-1px', color: m.color, marginBottom: 4 }}>{m.value}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{m.label}</div>
           </div>
-          <div className="space-y-4">
-            <AppointmentRow name="John Doe" service="Haircut & Beard" time="14:30 PM" status="Confirmed" />
-            <AppointmentRow name="Sarah Smith" service="Full Eye Exam" time="15:00 PM" status="Pending" />
-            <AppointmentRow name="Mike Johnson" service="Consultation" time="16:15 PM" status="Cancelled" />
-            <AppointmentRow name="Elena Rodriguez" service="Standard Checkup" time="09:00 AM" status="Confirmed" />
+        ))}
+      </div>
+
+      {/* Main Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
+        {/* Appointments Table */}
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700 }}>Today&apos;s Appointments</h2>
+            <button className="btn-secondary btn-sm">View all</button>
+          </div>
+          <div>
+            {APPOINTMENTS.map((a, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 16,
+                padding: '14px 24px',
+                borderBottom: i < APPOINTMENTS.length - 1 ? '1px solid var(--border)' : 'none',
+                transition: 'background 0.15s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+                  background: `hsl(${i * 47 + 210}, 70%, 20%)`,
+                  border: `1px solid hsl(${i * 47 + 210}, 60%, 35%)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, fontWeight: 700, color: `hsl(${i * 47 + 210}, 80%, 75%)`,
+                }}>{a.avatar}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{a.client}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{a.service} · {a.staff}</div>
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', flexShrink: 0 }}>{a.time}</div>
+                <div style={{
+                  padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+                  background: STATUS_STYLES[a.status].bg,
+                  color: STATUS_STYLES[a.status].color,
+                  flexShrink: 0,
+                }}>{STATUS_STYLES[a.status].label}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="space-y-6">
-          <div className="card-premium bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none">
-            <h3 className="text-lg font-bold mb-2">New Appointment</h3>
-            <p className="text-blue-100 text-sm mb-4">Quickly schedule a client without going through the public flow.</p>
-            <button className="w-full py-3 bg-white text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition">
-              + Create Manually
-            </button>
-          </div>
-
-          <div className="card-premium">
-            <h3 className="text-lg font-bold mb-4">Branch Status</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Main Street Office</span>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-lg font-medium">Open</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Downtown Branch</span>
-                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-lg font-medium">Open</span>
-              </div>
+        {/* Right Column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Quick Actions */}
+          <div className="card" style={{ padding: 20 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 14, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Quick Actions</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {QUICK_ACTIONS.map((action, i) => (
+                <button key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '10px 14px', borderRadius: 10,
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--text-primary)', cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                  transition: 'all 0.15s', textAlign: 'left', width: '100%',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'var(--border-bright)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+                >
+                  <span style={{ fontSize: 16 }}>{action.icon}</span>
+                  {action.label}
+                </button>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
-function StatCard({ title, value, change, icon, color }: { title: string, value: string, change: string, icon: string, color: string }) {
-  return (
-    <div className="card-premium group">
-      <div className="flex justify-between items-start mb-4">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm bg-${color}-50 text-${color}-600`}>
-          {icon}
+          {/* Occupancy Mini Chart */}
+          <div className="card" style={{ padding: 20 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Staff Occupancy</h3>
+            {[{ name: 'Carlos', pct: 92 }, { name: 'Luis', pct: 78 }, { name: 'Maria', pct: 85 }].map((s, i) => (
+              <div key={i} style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
+                  <span style={{ fontWeight: 500 }}>{s.name}</span>
+                  <span style={{ color: 'var(--text-muted)' }}>{s.pct}%</span>
+                </div>
+                <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 3,
+                    width: `${s.pct}%`,
+                    background: `linear-gradient(90deg, #6366f1, #06b6d4)`,
+                    transition: 'width 1s ease',
+                  }} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <span className={`text-sm font-bold ${change.startsWith('+') ? 'text-green-500' : 'text-gray-400'}`}>
-          {change}
-        </span>
-      </div>
-      <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
-      <p className="text-2xl font-bold mt-1 tracking-tight">{value}</p>
-    </div>
-  )
-}
-
-function AppointmentRow({ name, service, time, status }: { name: string, service: string, time: string, status: string }) {
-  const statusColors: any = {
-    Confirmed: 'bg-green-100 text-green-700',
-    Pending: 'bg-yellow-100 text-yellow-700',
-    Cancelled: 'bg-red-100 text-red-700'
-  }
-
-  return (
-    <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition border border-transparent hover:border-gray-100">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-400">
-          {name.charAt(0)}
-        </div>
-        <div>
-          <p className="font-bold text-sm">{name}</p>
-          <p className="text-xs text-gray-500">{service}</p>
-        </div>
-      </div>
-      <div className="text-right">
-        <p className="text-sm font-semibold">{time}</p>
-        <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-md ${statusColors[status]}`}>
-          {status}
-        </span>
       </div>
     </div>
   )
