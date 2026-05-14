@@ -19,7 +19,7 @@ const S = {
   warning: '#f59e0b',
 }
 
-const NICHES = ['Barbershops ✂️', 'Clinics 🏥', 'Opticals 👁️', 'Spas 💆', 'Dentists 🦷', 'Gyms 🏋️']
+const NICHES = ['Barbershops ✂️', 'Restaurants 🍽️', 'Clinics 🏥', 'Salons 💇‍♀️', 'Dentists 🦷', 'Lawyers ⚖️', 'Consultants 💼', 'Gyms 🏋️']
 
 const STATS = [
   { v: '10k+', l: 'Appointments Booked' },
@@ -38,9 +38,9 @@ const FEATURES = [
 ]
 
 const TESTIMONIALS = [
-  { quote: 'Went from 0 to 200 bookings in the first month. My clients love how easy it is.', name: 'Carlos M.', role: 'Barbershop Owner' },
-  { quote: 'We replaced our manual calendar. Reminders alone recovered 40% of missed revenue.', name: 'Dr. Lucía V.', role: 'Dental Clinic' },
-  { quote: 'I resell this to my clients as a branded product. Incredible margins.', name: 'Felipe R.', role: 'SaaS Reseller' },
+  { quote: 'We went from 0 to 200 bookings in the first month. Our clients love how easy it is.', name: 'Carlos M.', role: 'Barbershop Owner' },
+  { quote: 'It replaced our manual calendar and phone reservations. Reminders alone recovered 40% of missed revenue.', name: 'Dr. Lucía V.', role: 'Dental Clinic' },
+  { quote: 'Perfect for managing my consulting hours. The Google Calendar sync is flawless.', name: 'Elena G.', role: 'Legal Consultant' },
 ]
 
 export default function LandingPage() {
@@ -130,7 +130,7 @@ export default function LandingPage() {
           </h1>
 
           <p style={{ fontSize: 19, color: S.textSecondary, maxWidth: 540, margin: '0 auto 44px', lineHeight: 1.75 }}>
-            A complete white-label booking engine. Deploy under your brand in minutes and start earning recurring revenue.
+            A complete white-label booking engine for any business. Deploy under your brand in minutes and start taking reservations seamlessly.
           </p>
 
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
