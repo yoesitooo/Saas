@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { supabase } from '../../../lib/supabase/client'
 
 const S = {
   bg: '#08080f',
@@ -36,9 +37,24 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise(r => setTimeout(r, 1600))
-    setLoading(false)
-    setStep(2)
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: {
+            business_name: form.business,
+            plan: plan
+          }
+        }
+      })
+      if (error) throw error
+      setStep(2)
+    } catch (err: any) {
+      alert(err.message || 'Error creating account')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const inputStyle = (field: string): React.CSSProperties => ({
