@@ -1,39 +1,70 @@
-# Horum: White-Label Booking SaaS
+# Horum — White-Label Booking SaaS
 
-A niche-agnostic, premium appointment scheduling platform built with Next.js 14, FastAPI, and Supabase.
+**Multi-tenant appointment scheduling platform: each business gets its own branches, staff, services and a public booking page that can be embedded on any website with one `<script>` tag.**
 
-## 🚀 Quick Start
+![Next.js](https://img.shields.io/badge/Next.js_14-000?logo=nextdotjs&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres_·_Auth_·_RLS-3FCF8E?logo=supabase&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker_Compose-2496ED?logo=docker&logoColor=white)
+![Status](https://img.shields.io/badge/status-MVP_in_progress-orange)
 
-### 1. Database Setup
-- Create a project in [Supabase](https://supabase.com).
-- Run the migration script found in `supabase/migrations/001_initial_schema.sql` in your Supabase SQL Editor.
+> 🇪🇸 SaaS de agendamiento de citas marca blanca (multi-negocio), con Next.js 14, FastAPI y Supabase.
 
-### 2. Backend Setup
-```bash
-cd src/backend
-python -m venv venv
-source venv/bin/activate # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-cp ../../.env.example .env
-uvicorn app.main:app --reload
+## Architecture
+
+```mermaid
+flowchart LR
+    Site["Client website"] -->|widget.js iframe| Booking["Public booking page<br/>Next.js"]
+    Owner["Business owner"] --> Dashboard["Dashboard<br/>Next.js"]
+    Booking --> API["REST API · FastAPI<br/>/api/v1"]
+    Dashboard --> API
+    Dashboard -->|auth| SBAuth["Supabase Auth"]
+    API --> DB[("Supabase Postgres<br/>Row Level Security")]
+    API --> GCal["Google Calendar API"]
+    API --> Mail["Email notifications"]
 ```
 
-### 3. Frontend Setup
+| Layer | What's there |
+|---|---|
+| **Backend** (`src/backend`) | FastAPI app with versioned routers: `auth`, `businesses`, `branches`, `staff`, `services`, `appointments`, `calendar`. Slot-availability algorithm with overlap detection (`core/availability.py`), JWT + bcrypt (`core/security.py`), Google Calendar client, email notifications. |
+| **Frontend** (`src/frontend`) | Next.js 14 App Router with route groups: `(auth)` login/register, `(dashboard)/[business_slug]` for owners (branches, staff), `(public)/booking/[branch_id]` for end customers. |
+| **Embeddable widget** | [`public/widget.js`](./src/frontend/public/widget.js) — drop `<script src=".../widget.js" data-branch-id="...">` into any site to render the booking flow. |
+| **Database** | [`supabase/migrations/001_initial_schema.sql`](./supabase/migrations/001_initial_schema.sql): businesses, branches, staff, specialties, services, appointments and Google Calendar sync, with **Row Level Security** enabled for tenant isolation. |
+
+## Quick start
+
+### 1. Database
+Create a [Supabase](https://supabase.com) project and run `supabase/migrations/001_initial_schema.sql` in the SQL editor.
+
+### 2. Backend
+```bash
+cd src/backend
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp ../../.env.example .env
+uvicorn app.main:app --reload    # docs at http://localhost:8000/docs
+```
+
+### 3. Frontend
 ```bash
 cd src/frontend
 npm install
 cp ../../.env.example .env.local
-npm run dev
+npm run dev                      # http://localhost:3000
 ```
 
-## 🛠 Features
-- **Multi-tenancy:** Isolated data for every business.
-- **Google Calendar Sync:** Automated event creation for staff.
-- **Premium UI:** Glassmorphism and modern design system.
-- **Web Widget:** Embed the booking flow on any website.
-
-## 🐳 Docker
-To run everything with Docker:
+### Or everything with Docker
 ```bash
-docker-compose up --build
+cp .env.example .env
+docker compose up --build
 ```
+
+## Roadmap
+
+- [ ] Automated tests for the availability algorithm and appointment endpoints (pytest)
+- [ ] Full booking flow UI + payment integration
+- [ ] CI pipeline (lint + tests) with GitHub Actions
+
+## Author
+
+**Jhoe Miranda** — co-founder at Horum Labs · [GitHub](https://github.com/yoesitooo) · [LinkedIn](https://www.linkedin.com/in/jhoe-miranda)
